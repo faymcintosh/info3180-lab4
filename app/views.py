@@ -71,10 +71,10 @@ def files():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
 
-    if current_user.is_authenticated:
+     #if current_user.is_authenticated:
             # if user is already logged in, just redirect them to our secure page
         # or some other page like a dashboard
-        return redirect(url_for('secure_page'))
+         #return redirect(url_for('secure_page'))
 
     # Here we use a class of some kind to represent and validate our
     # client-side form data. For example, WTForms is a library that will
