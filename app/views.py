@@ -25,7 +25,10 @@ def about():
 
 
 @app.route('/upload', methods=['POST', 'GET'])
+@login_required 
 def upload():
+    if not session.get('logged_in'):
+        abort(401)
 
     # Instantiate your form class
     form = UploadForm()
@@ -45,6 +48,25 @@ def upload():
     if request.method == 'GET':
         return render_template('upload.html', form=form)
 
+def get_uploaded_images():
+    lst=[]
+    rootdir = os.getcwd()
+    for subdir, dirs, files in os.walk(rootdir + '/uploads/'):
+         for file in files[1:]:
+             lst.append(file)
+    return lst
+
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    rootdir = os.getcwd()
+    return send_from_directory(os.path.join(rootdir,app.config['UPLOAD_FOLDER']), filename)
+
+@app.route('/files',methods=['GET'])
+@login_required 
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+    return render_template('files.html',filenames=get_uploaded_images())
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -87,6 +109,15 @@ def login():
 
     flash_errors(form)
     return render_template('login.html', form=form)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    # Logout the user and end the session
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('home'))
 
 
      # form = LoginForm()
